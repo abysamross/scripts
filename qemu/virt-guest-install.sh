@@ -1,0 +1,39 @@
+ /usr/local/bin/qemu-system-s390x -name guest=ubuntu2410,debug-threads=on \
+    -S -object {"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain-2-ubuntu2410/master-key.aes"} \
+    -machine s390-ccw-virtio-9.2,usb=off,dump-guest-core=off,memory-backend=s390.ram \
+    -accel kvm \
+    -cpu gen16b-base,nnpa=on,aen=on,cmmnt=on,vxpdeh=on,aefsi=on,diag318=on,mepoch=on,msa9=on,msa8=on,msa7=on,msa6=on,msa5=on,msa4=on,msa3=on,msa2=on,msa1=on,sthyi=on,edat=on,ri=on,deflate=on,edat2=on,etoken=on,vx=on,ipter=on,pai=on,cei=on,paie=on,mepochptff=on,ap=on,gpereh=on,vxeh=on,vxpd=on,esop=on,ib=on,msa9_pckmo=on,siif=on,vxeh2=on,esort=on,ibs=on,appv=on,apqi=on,apft=on,els=on,sief2=on,iep=on,appvi=on,apqci=on,kss=on,cte=on,ais=on,bpb=on,64bscao=on,ctop=on,gs=on,ppa15=on,zpci=on,rdp=on,sea_esop2=on,beareh=on,te=on,cmm=on,gsls=on,vxpdeh2=on \
+    -m 4096 \
+    -object {"qom-type":"memory-backend-ram","id":"s390.ram","size":4294967296} \
+    -overcommit mem-lock=off \
+    -smp 2,sockets=2,cores=1,threads=1 \
+    -uuid 136025de-b528-4ae9-9a1e-8aab4f1a41e9 \
+    -display none \
+    -no-user-config \
+    -nodefaults \
+    -chardev socket,id=charmonitor,fd=38,server=on,wait=off \
+    -mon chardev=charmonitor,id=monitor,mode=control \
+    -rtc base=utc \
+    -no-shutdown \
+    -boot strict=on \
+    -kernel /var/lib/libvirt/boot/virtinst-nn7byk5n-kernel.ubuntu \
+    -initrd /var/lib/libvirt/boot/virtinst-647il17j-initrd.ubuntu \
+    -device virtio-scsi-ccw,id=scsi0,devno=fe.0.0002 \
+    -device virtio-serial-ccw,id=virtio-serial0,devno=fe.0.0003 \
+    -blockdev {"driver":"file","filename":"/home/abysamross/vmdisks/ubuntu-24.10-server-s390x-disk-1.qcow2","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"} \
+    -blockdev {"node-name":"libvirt-2-format","read-only":false,"driver":"qcow2","file":"libvirt-2-storage","backing":null} \
+    -device virtio-blk-ccw,devno=fe.0.0000,drive=libvirt-2-format,id=virtio-disk0,bootindex=1 \
+    -device scsi-cd,bus=scsi0.0,channel=0,scsi-id=0,lun=0,device_id=drive-scsi0-0-0-0,drive=libvirt-1-format,id=scsi0-0-0-0 \
+    -netdev tap,fd=39,id=hostnet0,vhost=on,vhostfd=41 \
+    -device virtio-net-ccw,netdev=hostnet0,id=net0,mac=52:54:00:7c:b5:a4,devno=fe.0.0001 \
+    -chardev socket,id=charchannel0,fd=37,server=on,wait=off \
+    -device virtserialport,bus=virtio-serial0.0,nr=1,chardev=charchannel0,id=channel0,name=org.qemu.guest_agent.0 \
+    -chardev pty,id=charconsole0 \
+    -device sclpconsole,chardev=charconsole0,id=console0 \
+    -audiodev {"id":"audio1","driver":"none"} \
+    -blockdev {"driver":"file","filename":"/home/abysamross/distros/arch/s390x/ubuntu/24.10/iso/ubuntu-24.10-server-s390x.iso","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"} \
+    -blockdev {"node-name":"libvirt-1-format","read-only":true,"driver":"raw","file":"libvirt-1-storage"} \
+    -device virtio-balloon-ccw,id=balloon0,devno=fe.0.0004 \
+    -object {"qom-type":"rng-random","id":"objrng0","filename":"/dev/urandom"} \
+    -device virtio-rng-ccw,rng=objrng0,id=rng0,devno=fe.0.0005 \
+    -msg timestamp=on
