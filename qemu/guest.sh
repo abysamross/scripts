@@ -9,8 +9,8 @@ diskformat=$6
 instance=$7
 mem=$8
 
-# qemu=${HOME}/source/qemu/build/qemu-system-${arch}
 HOME=/home/abysamross
+# qemu=${HOME}/source/qemu/build/qemu-system-${arch}
 qemu=qemu-system-${arch}
 
 distdir=${HOME}/distros/arch/${arch}/${distro}
@@ -109,7 +109,8 @@ fi
 ### run VM  ### {{{
 
 if [[ ${action} == run ]]; then
-${qemu} -name guest=${distro}-${version}-${flavor}-${arch}-${instance},debug-threads=on \
+    # strace
+    ${qemu} -name guest=${distro}-${version}-${flavor}-${arch}-${instance},debug-threads=on \
     \
     -machine s390-ccw-virtio,usb=off,dump-guest-core=off,memory-backend=s390.ram \
     -accel kvm \
@@ -137,9 +138,6 @@ ${qemu} -name guest=${distro}-${version}-${flavor}-${arch}-${instance},debug-thr
     -blockdev qcow2,file=blk_storage0,node-name=blk_format0 \
     -device virtio-blk-ccw,devno=fe.0.0002,drive=blk_format0,id=virtio-blk0,bootindex=1 \
     \
-    -device zpci,uid=0,fid=0,target=vfio-pci0,id=zpci0 \
-    -device vfio-pci,host=0003:00:00.0,id=vfio-pci0 \
-    \
     -device virtio-serial-ccw,id=virtio-serial0,devno=fe.0.0003 \
     -chardev stdio,id=char-stdio0,mux=on,signal=on,server=on,wait=off \
     -device virtserialport,bus=virtio-serial0.0,nr=1,chardev=char-stdio0,id=virtserial0,name=org.qemu.guest_agent.0 \
@@ -153,6 +151,8 @@ ${qemu} -name guest=${distro}-${version}-${flavor}-${arch}-${instance},debug-thr
     \
     -audiodev id=virtaudio0,driver=none \
     \
+    -device zpci,uid=0,fid=0,target=vfio-pci0,id=zpci0 \
+    -device vfio-pci,host=0000:00:00.1,id=vfio-pci0,vf-token=e3f6d79f-afd5-499f-b0da-811a2c3207a0 \
     -msg timestamp=on \
     -D ${logfile}
 fi
@@ -160,6 +160,13 @@ fi
 ### end run VM  ### }}}
 
 ### alternate/optional args ### {{{
+#
+## Attach GDB ## {{{
+    # \
+    # -s \
+    # -S \
+    # \
+## Attach GDB ## }}}
 #
 ## Guest Network ## {{{
 #
