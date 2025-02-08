@@ -21,12 +21,59 @@ diskdir=${HOME}/vmdisks
 diskname=${distro}-${version}-${flavor}-${arch}-disk-${instance}.${diskformat}
 disk=${diskdir}/${diskname}
 logdir=${HOME}/logs/qemu/${action}
-logfile=${logdir}/${distro}-${version}-${flavor}-${arch}.log
+logfile=${logdir}/${distro}-${version}-${flavor}-${arch}-${instance}.log
+goldenimagedir=${diskdir}/golden_image
+goldenimagename=${distro}-${version}-${flavor}-${arch}-disk-goldeny.${diskformat}
+goldenimage=${goldenimagedir}/${goldenimagename}
 
-# TODO: create vmdisk if file doesn't exist.
+# check action and prerequisite items
+case ${action} in 
+	run)
+		if [[ ! -f ${disk} ]] && [[ -f ${goldenimage} ]]; then
+			out=$(cp ${goldenimage} ${disk} 2>&1)
+			if [ $? -ne 0]; then
+				echo ""
+				echo "failed to create "${disk}" :"${out}
+				exit
+			fi
+		fi
+		if [[ ! -f ${goldenimage} ]]; then
+			echo ""
+			echo ${goldenimage}" golden image not found!"
+			exit
+		fi
+	;;
+	install)
+		if [[ ! -f ${disk} ]]; then
+			out=$(qemu-img create -f qcow2 $disk 20G 2>&1)
+			if [ $? -ne 0]; then
+				echo ""
+				echo "failed to create "${disk}" :"${out}
+				exit
+			fi
+		else
+			echo ""
+			echo ${disk}" already exits cannot create VM!"
+			exit
+		fi
+	;;
+	live)
+		if [[ ! -f ${iso} ]]; then
+			echo ""
+			echo ${iso}" not found cannot boot live VM!"
+			exit
+		fi
+	;;
+	*)
+		echo ""
+		echo "invalid action "${action}" !"
+		exit
+	;;
+esac
 
+# create log file
 if [[ ! -f ${logfile} ]]; then
-    touch ${logfile}
+	touch ${logfile}
 fi
 
 ### live VM ### {{{
