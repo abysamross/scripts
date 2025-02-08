@@ -109,7 +109,6 @@ fi
 ### run VM  ### {{{
 
 if [[ ${action} == run ]]; then
-    # strace
     ${qemu} -name guest=${distro}-${version}-${flavor}-${arch}-${instance},debug-threads=on \
     \
     -machine s390-ccw-virtio,usb=off,dump-guest-core=off,memory-backend=s390.ram \
