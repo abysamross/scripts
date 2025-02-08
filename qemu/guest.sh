@@ -32,7 +32,7 @@ fi
 ### live VM ### {{{
 
 if [[ ${action} == live ]]; then
-${qemu} -machine s390-ccw-virtio \
+    ${qemu} -machine s390-ccw-virtio \
     -cpu max,zpci=on,msa5-base=on \
     -serial telnet::4441,server \
     -display none \
@@ -48,7 +48,7 @@ fi
 ### install VM ### {{{
 
 if [[ ${action} == install ]]; then
-${qemu} -name guest=${distro}-${version}-${flavor}-${arch}-${instance},debug-threads=on \
+    ${qemu} -name guest=${distro}-${version}-${flavor}-${arch}-${instance},debug-threads=on \
     \
     -machine s390-ccw-virtio,usb=off,dump-guest-core=off,memory-backend=s390.ram \
     -accel kvm \
