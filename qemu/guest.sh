@@ -169,7 +169,7 @@ if [[ ${action} == run ]]; then
     -overcommit mem-lock=off \
     \
     -display none \
-    -serial telnet::4441,server \
+    -serial telnet::444${instance},server \
     \
     -rtc base=utc \
     -no-shutdown \
