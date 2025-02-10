@@ -23,24 +23,25 @@ disk=${diskdir}/${diskname}
 logdir=${HOME}/logs/qemu/${action}
 logfile=${logdir}/${distro}-${version}-${flavor}-${arch}-${instance}.log
 goldenimagedir=${diskdir}/golden_image
-goldenimagename=${distro}-${version}-${flavor}-${arch}-disk-goldeny.${diskformat}
+goldenimagename=${distro}-${version}-${flavor}-${arch}-disk-golden.${diskformat}
 goldenimage=${goldenimagedir}/${goldenimagename}
 
 # check action and prerequisite items
 case ${action} in 
 	run)
-		if [[ ! -f ${disk} ]] && [[ -f ${goldenimage} ]]; then
-			out=$(cp ${goldenimage} ${disk} 2>&1)
-			if [ $? -ne 0]; then
+		if [[ ! -f ${disk} ]]; then
+			if [[ -f ${goldenimage} ]]; then
+				out=$(cp ${goldenimage} ${disk} 2>&1)
+				if [ $? -ne 0]; then
+					echo ""
+					echo "failed to create "${disk}" :"${out}
+					exit
+				fi
+			else
 				echo ""
-				echo "failed to create "${disk}" :"${out}
+				echo ${goldenimage}" golden image not found!"
 				exit
 			fi
-		fi
-		if [[ ! -f ${goldenimage} ]]; then
-			echo ""
-			echo ${goldenimage}" golden image not found!"
-			exit
 		fi
 	;;
 	install)
